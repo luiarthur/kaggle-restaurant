@@ -1,3 +1,5 @@
+library(chron)
+
 library(sqldf)
 '%+%' = function(a,b) paste0(a,b)
 
@@ -47,7 +49,15 @@ hist_all <- sqldf('
 head(hist_all)
 x = groupBy(hist_all, 'air_store_id')
 
-plot.ts(x[[1]]$visitors)
-axis(1, at=1:N[1], air_agg_sep[[1]]$visit_date, las=2, cex.axis=.8)
+is.weekend = function(x) {
+  d = weekdays(as.Date(x))
+  ifelse(d == "Saturday" | d == "Sunday", TRUE, FALSE)
+}
 
-plot(x[[9]]$sum_visitors, x[[9]]$visitors)
+i = 10
+plot(x[[i]]$sum_visitors, x[[i]]$visitors,
+     col=is.weekend(x[[i]]$visit_date)+3, pch=20, cex=1.5)
+
+plot(x[[i]]$sum_visitors, col='red', type='l', pch=20)
+lines(x[[i]]$visitors, col='grey')
+points(x[[i]]$visitors, col=is.weekend(x[[i]]$visit_date)+1, pch=20)
